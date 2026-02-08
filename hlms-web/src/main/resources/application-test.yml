@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:hlms_test;DB_CLOSE_DELAY=-1;MODE=Oracle
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  flyway:
+    enabled: false
+  batch:
+    jdbc:
+      initialize-schema: always
+
+hlms:
+  security:
+    jwt:
+      secret: test-secret-key-for-testing-purposes-only-minimum-256-bits-long
+      access-token-expiry: 900000
+      refresh-token-expiry: 28800000
+
+logging:
+  level:
+    com.hlms: DEBUG
+    org.springframework.security: DEBUG

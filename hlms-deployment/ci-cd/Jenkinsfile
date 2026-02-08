@@ -1,0 +1,150 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven-3.9'
+        jdk 'JDK-21'
+    }
+
+    environment {
+        DOCKER_REGISTRY = 'registry.bank.com'
+        IMAGE_NAME = 'hlms/backend'
+        SONAR_HOST = 'https://sonar.bank.com'
+        NEXUS_URL = 'https://nexus.bank.com/repository/maven-releases'
+    }
+
+    options {
+        timeout(time: 60, unit: 'MINUTES')
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                script {
+                    env.GIT_COMMIT_SHORT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    env.BUILD_VERSION = "${env.BUILD_NUMBER}-${env.GIT_COMMIT_SHORT}"
+                }
+            }
+        }
+
+        stage('Build & Unit Test') {
+            steps {
+                sh 'mvn clean verify -DskipITs'
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                    jacoco(execPattern: '**/target/jacoco.exec')
+                }
+            }
+        }
+
+        stage('Integration Test') {
+            steps {
+                sh 'mvn verify -DskipUTs -Pintegration-test'
+            }
+            post {
+                always {
+                    junit '**/target/failsafe-reports/*.xml'
+                }
+            }
+        }
+
+        stage('SAST - SonarQube') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh """
+                        mvn sonar:sonar \\
+                            -Dsonar.projectKey=hlms-backend \\
+                            -Dsonar.projectName='HLMS Backend' \\
+                            -Dsonar.host.url=${SONAR_HOST} \\
+                            -Dsonar.java.coveragePlugin=jacoco
+                    """
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                script {
+                    def imageTag = "${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_VERSION}"
+                    def latestTag = "${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
+
+                    sh """
+                        docker build -t ${imageTag} -t ${latestTag} \\
+                            -f hlms-deployment/docker/Dockerfile.backend .
+                        docker push ${imageTag}
+                        docker push ${latestTag}
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                script {
+                    sh """
+                        kubectl set image deployment/hlms-backend \\
+                            hlms-backend=${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_VERSION} \\
+                            -n hlms-staging
+                        kubectl rollout status deployment/hlms-backend -n hlms-staging --timeout=300s
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to Production') {
+            when {
+                branch 'main'
+            }
+            input {
+                message 'Deploy to production?'
+                ok 'Deploy'
+                submitter 'release-manager,devops-lead'
+            }
+            steps {
+                script {
+                    sh """
+                        kubectl set image deployment/hlms-backend \\
+                            hlms-backend=${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_VERSION} \\
+                            -n hlms
+                        kubectl rollout status deployment/hlms-backend -n hlms --timeout=300s
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Build ${BUILD_VERSION} succeeded"
+        }
+        failure {
+            echo "Build ${BUILD_VERSION} failed"
+        }
+        always {
+            cleanWs()
+        }
+    }
+}

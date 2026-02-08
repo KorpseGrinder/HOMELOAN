@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hlms-config
+  namespace: hlms
+data:
+  spring.profiles.active: "staging,mock"
+  spring.datasource.url: "jdbc:oracle:thin:@oracle-db-service:1521/HLMSDB"
+  spring.jpa.show-sql: "false"
+  spring.flyway.enabled: "true"
+  server.port: "8080"
+  management.server.port: "8081"
+  hlms.document.storage-path: "/opt/hlms/documents"
+  logging.level.com.hlms: "INFO"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hlms-db-secret
+  namespace: hlms
+type: Opaque
+data:
+  username: aGxtc19hcHA=
+  password: aGxtc19wYXNzd29yZA==
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hlms-jwt-secret
+  namespace: hlms
+type: Opaque
+data:
+  jwt-secret: bXktc3VwZXItc2VjcmV0LWtleS1mb3ItaGxtcy1qd3QtdG9rZW4tZ2VuZXJhdGlvbi0yNTYtYml0cw==

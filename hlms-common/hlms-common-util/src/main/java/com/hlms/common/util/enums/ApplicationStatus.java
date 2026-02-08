@@ -1,0 +1,21 @@
+package com.hlms.common.util.enums;
+
+public enum ApplicationStatus {
+    DRAFT,
+    SUBMITTED,
+    UNDER_REVIEW,
+    DOCUMENTS_PENDING,
+    CREDIT_CHECK,
+    ELIGIBILITY_CHECK,
+    UNDERWRITING,
+    DEVIATION_APPROVAL,
+    SANCTIONED,
+    SANCTION_LETTER_ISSUED,
+    CUSTOMER_ACCEPTED,
+    DISBURSEMENT_INITIATED,
+    DISBURSED,
+    REJECTED,
+    CANCELLED,
+    WITHDRAWN,
+    ON_HOLD
+}

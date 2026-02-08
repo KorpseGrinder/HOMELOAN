@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.7</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.hlms</groupId>
+    <artifactId>hlms-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>HLMS - Housing Loan Management System</name>
+    <description>Enterprise-grade Housing Loan Management System for PSU Banks</description>
+
+    <modules>
+        <!-- Shared Kernel -->
+        <module>hlms-common/hlms-common-util</module>
+        <module>hlms-common/hlms-common-exception</module>
+        <module>hlms-common/hlms-common-audit</module>
+        <module>hlms-common/hlms-common-security</module>
+
+        <!-- Domain Layer -->
+        <module>hlms-domain/hlms-domain-customer</module>
+        <module>hlms-domain/hlms-domain-loan</module>
+        <module>hlms-domain/hlms-domain-property</module>
+        <module>hlms-domain/hlms-domain-disbursement</module>
+        <module>hlms-domain/hlms-domain-servicing</module>
+        <module>hlms-domain/hlms-domain-collection</module>
+
+        <!-- Application Layer -->
+        <module>hlms-application/hlms-app-origination</module>
+        <module>hlms-application/hlms-app-disbursement</module>
+        <module>hlms-application/hlms-app-servicing</module>
+        <module>hlms-application/hlms-app-collection</module>
+
+        <!-- Infrastructure Layer -->
+        <module>hlms-infrastructure/hlms-infra-persistence</module>
+        <module>hlms-infrastructure/hlms-infra-messaging</module>
+        <module>hlms-infrastructure/hlms-infra-integration</module>
+        <module>hlms-infrastructure/hlms-infra-document</module>
+
+        <!-- Workflow Engine -->
+        <module>hlms-workflow/hlms-workflow-origination</module>
+        <module>hlms-workflow/hlms-workflow-disbursement</module>
+        <module>hlms-workflow/hlms-workflow-collection</module>
+
+        <!-- Batch Processing -->
+        <module>hlms-batch/hlms-batch-emi</module>
+        <module>hlms-batch/hlms-batch-interest</module>
+        <module>hlms-batch/hlms-batch-npa</module>
+        <module>hlms-batch/hlms-batch-reporting</module>
+
+        <!-- Web Application -->
+        <module>hlms-web</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Spring -->
+        <spring-boot.version>3.3.7</spring-boot.version>
+        <spring-statemachine.version>4.0.0</spring-statemachine.version>
+
+        <!-- Database -->
+        <oracle-jdbc.version>23.4.0.24.05</oracle-jdbc.version>
+        <flyway.version>10.15.0</flyway.version>
+
+        <!-- Security -->
+        <jjwt.version>0.12.6</jjwt.version>
+
+        <!-- Mapping & Code Generation -->
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <lombok.version>1.18.34</lombok.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+
+        <!-- Rules Engine -->
+        <drools.version>9.44.0.Final</drools.version>
+
+        <!-- Reporting -->
+        <jasperreports.version>7.0.1</jasperreports.version>
+
+        <!-- Testing -->
+        <testcontainers.version>1.20.4</testcontainers.version>
+        <wiremock.version>3.9.2</wiremock.version>
+
+        <!-- Utilities -->
+        <commons-lang3.version>3.17.0</commons-lang3.version>
+        <guava.version>33.3.1-jre</guava.version>
+        <springdoc-openapi.version>2.6.0</springdoc-openapi.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- ==================== Internal Modules ==================== -->
+
+            <!-- Common -->
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-common-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-common-exception</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-common-audit</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-common-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Domain -->
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-domain-customer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-domain-loan</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-domain-property</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-domain-disbursement</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-domain-servicing</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-domain-collection</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Application -->
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-app-origination</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-app-disbursement</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-app-servicing</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-app-collection</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Infrastructure -->
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-infra-persistence</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-infra-messaging</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-infra-integration</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-infra-document</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Workflow -->
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-workflow-origination</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-workflow-disbursement</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-workflow-collection</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Batch -->
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-batch-emi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-batch-interest</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-batch-npa</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hlms</groupId>
+                <artifactId>hlms-batch-reporting</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- ==================== External Dependencies ==================== -->
+
+            <!-- Oracle JDBC -->
+            <dependency>
+                <groupId>com.oracle.database.jdbc</groupId>
+                <artifactId>ojdbc11</artifactId>
+                <version>${oracle-jdbc.version}</version>
+            </dependency>
+
+            <!-- Flyway Oracle -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-oracle</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+
+            <!-- JWT -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- MapStruct -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <!-- Spring State Machine -->
+            <dependency>
+                <groupId>org.springframework.statemachine</groupId>
+                <artifactId>spring-statemachine-core</artifactId>
+                <version>${spring-statemachine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.statemachine</groupId>
+                <artifactId>spring-statemachine-data-jpa</artifactId>
+                <version>${spring-statemachine.version}</version>
+            </dependency>
+
+            <!-- Drools Rules Engine -->
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-core</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-compiler</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-mvel</artifactId>
+                <version>${drools.version}</version>
+            </dependency>
+
+            <!-- JasperReports -->
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports</artifactId>
+                <version>${jasperreports.version}</version>
+            </dependency>
+
+            <!-- OpenAPI / Swagger -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc-openapi.version}</version>
+            </dependency>
+
+            <!-- Utilities -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wiremock</groupId>
+                <artifactId>wiremock-standalone</artifactId>
+                <version>${wiremock.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Lombok available to all modules -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Testing available to all modules -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>21</source>
+                        <target>21</target>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>${lombok-mapstruct-binding.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

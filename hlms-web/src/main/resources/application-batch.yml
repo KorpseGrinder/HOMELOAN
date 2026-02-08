@@ -1,0 +1,30 @@
+spring:
+  main:
+    web-application-type: none
+  batch:
+    job:
+      enabled: true
+    jdbc:
+      initialize-schema: always
+
+hlms:
+  batch:
+    emi-generation:
+      cron: "0 0 1 * * ?"
+    nach-presentment:
+      cron: "0 0 6 * * ?"
+    interest-accrual:
+      cron: "0 0 23 * * ?"
+    dpd-calculation:
+      cron: "0 0 2 * * ?"
+    npa-classification:
+      cron: "0 0 3 1 * ?"
+    provisioning:
+      cron: "0 0 4 1 * ?"
+    credit-bureau-reporting:
+      cron: "0 0 5 1,15 * ?"
+
+logging:
+  level:
+    com.hlms: INFO
+    org.springframework.batch: INFO

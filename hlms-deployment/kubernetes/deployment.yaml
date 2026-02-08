@@ -1,0 +1,142 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hlms-backend
+  namespace: hlms
+  labels:
+    app: hlms-backend
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hlms-backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: hlms-backend
+        version: v1
+    spec:
+      containers:
+        - name: hlms-backend
+          image: hlms/backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8081
+              name: actuator
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: hlms-config
+                  key: spring.profiles.active
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: hlms-config
+                  key: spring.datasource.url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: hlms-db-secret
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hlms-db-secret
+                  key: password
+            - name: HLMS_SECURITY_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hlms-jwt-secret
+                  key: jwt-secret
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseStringDeduplication"
+          resources:
+            requests:
+              memory: "768Mi"
+              cpu: "500m"
+            limits:
+              memory: "1536Mi"
+              cpu: "1000m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: document-storage
+              mountPath: /opt/hlms/documents
+            - name: logs
+              mountPath: /opt/hlms/logs
+      volumes:
+        - name: document-storage
+          persistentVolumeClaim:
+            claimName: hlms-documents-pvc
+        - name: logs
+          emptyDir: {}
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hlms-batch
+  namespace: hlms
+  labels:
+    app: hlms-batch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hlms-batch
+  template:
+    metadata:
+      labels:
+        app: hlms-batch
+    spec:
+      containers:
+        - name: hlms-batch
+          image: hlms/backend:latest
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "staging,batch"
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: hlms-config
+                  key: spring.datasource.url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: hlms-db-secret
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hlms-db-secret
+                  key: password
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"

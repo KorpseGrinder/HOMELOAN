@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build outputs
+dist/
+build/
+target/
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Angular
+.angular/
+.sass-cache/
+
+# Maven
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Misc
+*.tmp
+*.temp
+coverage/
+.nyc_output/

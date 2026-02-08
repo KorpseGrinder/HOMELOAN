@@ -1,0 +1,23 @@
+package com.hlms.common.util.enums;
+
+public enum DocumentType {
+    PAN_CARD,
+    AADHAAR_CARD,
+    PASSPORT,
+    VOTER_ID,
+    DRIVING_LICENSE,
+    PHOTOGRAPH,
+    SALARY_SLIP,
+    BANK_STATEMENT,
+    ITR,
+    FORM_16,
+    PROPERTY_DOCUMENT,
+    SALE_DEED,
+    AGREEMENT_TO_SELL,
+    ENCUMBRANCE_CERTIFICATE,
+    NOC,
+    APPROVED_PLAN,
+    VALUATION_REPORT,
+    INSURANCE_POLICY,
+    OTHER
+}

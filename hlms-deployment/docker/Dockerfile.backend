@@ -1,0 +1,10 @@
+FROM eclipse-temurin:21-jdk-jammy AS builder
+WORKDIR /app
+COPY . .
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests -pl hlms-web -am
+
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+COPY --from=builder /app/hlms-web/target/hlms-web-*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-XX:+UseZGC", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
